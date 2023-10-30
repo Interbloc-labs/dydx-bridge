@@ -12,6 +12,7 @@ import { AllowanceStep } from "../AllowanceStep/AllowanceStep";
 import { BridgeStep } from "../BridgeStep/BridgeStep";
 import { StakeStep } from "../StakeStep/StakeStep";
 import { useChain } from "@cosmos-kit/react";
+import { PendingMigrationsTable } from "../PendingMigrationsTable/PendingMigrationsTable";
 
 function Copyright(props: any) {
   return (
@@ -20,15 +21,36 @@ function Copyright(props: any) {
       color="text.secondary"
       align="center"
       {...props}
+      sx={{
+        marginTop: "15px",
+        flexDirection: "row",
+        alignItems: "center",
+        display: "flex",
+        gap: "3px",
+        justifyContent: "center",
+      }}
     >
-      {"Copyright © "}
+      {/* {"Copyright "} */}
       <Link
         color="inherit"
         target="_blank"
         href="https://explorer.interbloc.org/"
+        sx={{
+          flexDirection: "row",
+          alignItems: "center",
+          display: "flex",
+          gap: "3px",
+        }}
       >
+        <img
+          height={"18px"}
+          width={"18px"}
+          src={`/favicon.png`}
+          alt="Interbloc logo"
+        />{" "}
         Interbloc
-      </Link>{" "}
+      </Link>
+      {" © "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -102,7 +124,7 @@ export default function Form({}: Props) {
         )}
 
         <Box>
-          <Grid justifyContent="space-between" direction="column" container>
+          <Grid direction="column" container>
             <AllowanceStep
               address={ethAddr}
               onSubmit={(e) => {
@@ -112,18 +134,7 @@ export default function Form({}: Props) {
               onAllowanceSuccess={onAllowanceSuccess}
               allowanceAmount={allowanceQuery.data}
             />
-            {/* <Grid item xs={12}>
-                <ReceiverAddressInput
-                  value={cosmosAddress}
-                  onChange={setCosmosAddress}
-                />
-              </Grid> */}
-            {/* <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
-            </Grid> */}
+
             <BridgeStep
               cosmosAddress={cosmosAddress}
               // onRecipientChange={setCosmosAddress}
@@ -134,6 +145,8 @@ export default function Form({}: Props) {
               onBridgeSuccess={() => {
                 console.log("bridge success");
                 refetchWrappedDydxData();
+                dydxBalance.refetch();
+                allowanceRefetch();
               }}
             />
             <StakeStep
@@ -141,6 +154,7 @@ export default function Form({}: Props) {
             // address="dydx140l6y2gp3gxvay6qtn70re7z2s0gn57z9qaqxk"
             // onSubmit={console.log}
             />
+            {/* <PendingMigrationsTable /> */}
           </Grid>
         </Box>
       </Box>

@@ -25,6 +25,18 @@ import { dydxToEth } from "../../utils/ethToDydx";
 import { isLeft, tryCatch } from "fp-ts/lib/Either";
 import { useChain } from "@cosmos-kit/react";
 
+export const formatToken = (amount: bigint) => {
+  const amountStr = amount.toString();
+
+  return amount
+    ? Number(
+        amount / BigInt(1e18) +
+          "." +
+          amountStr.substring(Math.max(0, amountStr.length - 18))
+      ).toString()
+    : 0;
+};
+
 type Props = {
   address: `0x${string}` | undefined;
   onSubmit: (allowanceAmount: bigint) => void;
@@ -109,17 +121,7 @@ export const BridgeStep = ({
     }
   }, [approval, onBridgeSuccess]);
 
-  const allowanceAmountStr = allowanceAmount?.toString() || "";
-
-  const formattedAllowance = allowanceAmount
-    ? Number(
-        allowanceAmount / BigInt(1e18) +
-          "." +
-          allowanceAmountStr.substring(
-            Math.max(0, allowanceAmountStr.length - 18)
-          )
-      ).toString()
-    : 0;
+  const formattedAllowance = formatToken(allowanceAmount || 0n);
 
   return (
     <Box
@@ -130,10 +132,14 @@ export const BridgeStep = ({
       sx={{ mt: 3 }}
     >
       <Grid item xs={12}>
-        <Accordion style={{ borderRadius: "4px" }} expanded={expanded}>
+        <Accordion
+          style={{ borderRadius: "4px" }}
+          expanded={allowanceAmount !== 0n && expanded}
+          disabled={allowanceAmount === 0n}
+        >
           <AccordionSummary
             onClick={() => setExpanded(!expanded)}
-            expandIcon={<ExpandMore />}
+            expandIcon={allowanceAmount !== 0n && <ExpandMore />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
@@ -142,7 +148,7 @@ export const BridgeStep = ({
           <AccordionDetails>
             <>
               <Box textAlign="center" style={{ marginBottom: "15px" }}>
-                <Typography variant="h6">{formattedAllowance} DYDX</Typography>
+                <Typography variant="h6">{`${formattedAllowance} DYDX`}</Typography>
               </Box>
 
               <ReceiverAddressInput
